@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "647978692691",
+    "project_id": "estacionapp-48104",
+    "storage_bucket": "estacionapp-48104.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647978692691:android:7718d4c748f039c71096a6",
+        "android_client_info": {
+          "package_name": "com.example.estacionapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "647978692691-arkv5ddk2cbnsuph5hc70l1vt1rgjkhj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY6QaOs4RpwsL-011nfDJDCso67-wf-Cw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "647978692691-arkv5ddk2cbnsuph5hc70l1vt1rgjkhj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "647978692691-oqfhab2tqvl4dk6lck5fecf0c3fdrpbl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.estacionapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
