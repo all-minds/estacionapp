@@ -12,7 +12,7 @@ class ParkingLotsRepository {
   }
 
   static void updateParkingLot(
-      ParkingLot pl, String parkingId, String userId, bool isOccupation) {
+      ParkingLot pl, String parkingId, String userId, bool isOccupation) async {
     ParkingLot updatedPl = ParkingLot(
         id: pl.id,
         floor: pl.floor,

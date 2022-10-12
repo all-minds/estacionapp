@@ -2,6 +2,7 @@ import 'package:estacionapp/constants/routes.dart';
 import 'package:estacionapp/screens/home.dart';
 import 'package:estacionapp/screens/parking_lots_list.dart';
 import 'package:estacionapp/screens/sign_in.dart';
+import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +29,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: const SignIn(title: 'Estacionapp'),
+      initialRoute:
+          FirebaseAuthService.getUser() == null ? Routes.signIn : Routes.home,
       routes: {
         Routes.home: (context) => const Home(),
         Routes.signIn: (context) => const SignIn(),

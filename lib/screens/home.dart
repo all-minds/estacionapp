@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:estacionapp/components/default_app_bar.dart';
 import 'package:estacionapp/constants/font_size.dart';
+import 'package:estacionapp/constants/routes.dart';
 import 'package:estacionapp/models/parking.dart';
 import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +20,18 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = FirebaseAuthService(context: context);
-
-    loggedUser = authRepository.getUser();
+    loggedUser = FirebaseAuthService.getUser();
 
     final userInfoContainer = Container(
         padding: const EdgeInsets.all(Spacing.base),
-        //color: Colors.amber,
         child: Column(
           children: [
-            CircleAvatar(
-                radius: 20.0,
-                backgroundColor: Colors.white,
-                backgroundImage: NetworkImage(loggedUser!.photoURL!)),
+            Padding(
+                padding: const EdgeInsets.only(top: Spacing.base),
+                child: CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Colors.white,
+                    backgroundImage: NetworkImage(loggedUser!.photoURL!))),
             Padding(
                 padding: const EdgeInsets.all(Spacing.base),
                 child: Text(
@@ -47,6 +47,10 @@ class _Home extends State<Home> {
       Parking parking = Parking.fromSnapshot(snapshot);
       return ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: Spacing.base),
+          onTap: () {
+            Navigator.pushNamed(context, Routes.parkingLotsList,
+                arguments: parking);
+          },
           title: Text(
             parking.label,
             style: const TextStyle(
@@ -54,9 +58,12 @@ class _Home extends State<Home> {
           ),
           subtitle: Row(
             children: <Widget>[
-              Text(
-                  "Endereço: ${parking.address.streetName}, ${parking.address.city}",
-                  style: const TextStyle(color: Colors.white))
+              Flexible(
+                  child: Text(
+                "Endereço: ${parking.address.streetName}, ${parking.address.city}",
+                style: const TextStyle(color: Colors.white),
+                overflow: TextOverflow.ellipsis,
+              ))
             ],
           ),
           trailing: const Icon(
@@ -102,7 +109,7 @@ class _Home extends State<Home> {
     }
 
     return Scaffold(
-      appBar: DefaultAppBar(onLogoutPressed: authRepository.signOut),
+      appBar: const DefaultAppBar(),
       body: Column(children: <Widget>[
         userInfoContainer,
         Expanded(child: buildParkingList(context))

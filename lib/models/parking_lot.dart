@@ -6,7 +6,7 @@ class ParkingLot {
   final String floor;
   final bool isAvailable;
   final String number;
-  final ParkingLotTag tag;
+  final ParkingLotTag? tag;
   Timestamp? occupiedAt;
   String? occupantId;
 
@@ -17,7 +17,7 @@ class ParkingLot {
       required this.floor,
       required this.isAvailable,
       required this.number,
-      required this.tag,
+      this.tag,
       this.occupantId,
       this.occupiedAt});
 
@@ -40,7 +40,7 @@ class ParkingLot {
         "floor": floor,
         "is_available": isAvailable,
         "number": number,
-        "tag": tag.name,
+        "tag": tag?.name,
         "occupied_at": occupiedAt,
         "occupant_id": occupantId
       };

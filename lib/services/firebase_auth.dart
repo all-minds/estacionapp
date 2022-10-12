@@ -1,5 +1,6 @@
 import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -25,8 +26,8 @@ class FirebaseAuthService {
     return SnackBar(content: Text(message));
   }
 
-  User? getUser() {
-    return instance.currentUser;
+  static User? getUser() {
+    return FirebaseAuth.instance.currentUser;
   }
 
   // Encapsulates logout
@@ -54,6 +55,8 @@ class FirebaseAuthService {
       await instance.signInWithCredential(credential).then((value) async {
         await Navigator.pushNamedAndRemoveUntil(
             context, Routes.home, (_) => false);
+        await FirebaseMessaging.instance.subscribeToTopic(value.user!.uid);
+        print('ok');
       });
     } on FirebaseAuthException catch (error) {
       final message = authenticationErrorMapper[error.code] ??

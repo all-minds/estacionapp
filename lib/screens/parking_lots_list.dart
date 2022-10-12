@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:estacionapp/components/default_app_bar.dart';
 import 'package:estacionapp/constants/spacing.dart';
 import 'package:estacionapp/models/parking.dart';
-import 'package:estacionapp/models/parking_address.dart';
 import 'package:estacionapp/models/parking_lot.dart';
-import 'package:estacionapp/repositories/parking_lots_repository.dart';
+import 'package:estacionapp/services/parking_lots_repository.dart';
 import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,26 +16,27 @@ class ListParkingLots extends StatefulWidget {
 }
 
 class _ListParkingLotsState extends State<ListParkingLots> {
-  String parkingId = "1ANAmUT3C6YocWtKpMVS";
-
   User? loggedUser;
+  Parking? parking;
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = FirebaseAuthService(context: context);
-    loggedUser = authRepository.getUser();
+    loggedUser = FirebaseAuthService.getUser();
+    parking = ModalRoute.of(context)!.settings.arguments as Parking;
+
     return Scaffold(
+      appBar: const DefaultAppBar(),
       body: buildList(context),
     );
   }
 
   Widget buildList(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: ParkingLotsRepository.listParkingLots(parkingId),
+        stream: ParkingLotsRepository.listParkingLots(parking!.id),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const LinearProgressIndicator();
           if (snapshot.data == null) {
-            return Container(child: const Text("Nenhuma vaga encontrada"));
+            return const Text("Nenhuma vaga encontrada");
           } else {
             return buildListSeparated(context, snapshot.data!.docs);
           }
@@ -77,14 +78,14 @@ class _ListParkingLotsState extends State<ListParkingLots> {
       return ElevatedButton(
           onPressed: () => {
                 ParkingLotsRepository.updateParkingLot(
-                    pl, parkingId, userId, true)
+                    pl, parking!.id, userId, true)
               },
           style: ElevatedButton.styleFrom(minimumSize: const Size(100.0, 35.0)),
           child: const Text("Ocupar"));
     } else if (pl.occupantId == userId) {
       return OutlinedButton(
         onPressed: () => {
-          ParkingLotsRepository.updateParkingLot(pl, parkingId, userId, false)
+          ParkingLotsRepository.updateParkingLot(pl, parking!.id, userId, false)
         },
         style: OutlinedButton.styleFrom(backgroundColor: Colors.white),
         child: const Text(
