@@ -27,14 +27,14 @@ class _Home extends State<Home> {
       padding: const EdgeInsets.all(Spacing.base),
       //color: Colors.amber,
       child: Column(
-        children: [
-          const CircleAvatar(
+        children: const [
+          CircleAvatar(
             radius: 20.0,
             backgroundColor: Colors.white,
             backgroundImage: AssetImage('assets/user_male.png')
           ),
           Padding(
-            padding: const EdgeInsets.all(Spacing.base),
+            padding: EdgeInsets.all(Spacing.base),
             child: Text("Bem vindo, José")
           )
         ],        
@@ -63,7 +63,7 @@ class _Home extends State<Home> {
       return ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: Spacing.base),      
         title: Text(
-          parking.description == null ? "" : parking.description!,
+          parking.label,
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         subtitle: Row(
@@ -75,13 +75,13 @@ class _Home extends State<Home> {
         trailing: SizedBox(
           width: 30.0,
           height: 30.0,
-          child: ElevatedButton(
-            child: const Padding(
-              padding: EdgeInsets.zero,
-              child: Icon(Icons.keyboard_arrow_right, color: Colors.white)
-            ),
-            onPressed: () {}, // parte do Luiz. Mas eu preciso alterar alguma coisa de estado? Se pá sim...
-          )
+          child: Padding(
+            padding: const EdgeInsets.all(0),
+            child: ElevatedButton(
+              child: const Icon(Icons.keyboard_arrow_right, color: Colors.white),            
+              onPressed: () {},
+            )
+          )  
         )
       );
     }

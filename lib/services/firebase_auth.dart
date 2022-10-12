@@ -55,7 +55,6 @@ class FirebaseAuthService {
         await Navigator.pushNamedAndRemoveUntil(context, Routes.home, (_) => false);
       });
     } on FirebaseAuthException catch (error) {
-      print(error);
       final message = authenticationErrorMapper[error.code] ??
           'Não foi possível logar agora!';
 
@@ -64,7 +63,6 @@ class FirebaseAuthService {
 
       rethrow;
     } catch (error) {
-      print(error);
       ScaffoldMessenger.of(context).showSnackBar(
           FirebaseAuthService.customSnackBar(
               message: 'Um erro desconhecido ocorreu, tente novamente!'));
