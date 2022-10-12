@@ -1,19 +1,23 @@
 import 'package:estacionapp/components/google_sign_in_button.dart';
 import 'package:estacionapp/constants/spacing.dart';
-import 'package:estacionapp/repositories/parking_repository.dart';
+import 'package:estacionapp/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key, required this.title});
+class SignIn extends StatefulWidget {
+  const SignIn({super.key, required this.title});
 
   final String title;
 
   @override
-  State<StatefulWidget> createState() => _Home();
+  State<StatefulWidget> createState() => _SignIn();
 }
 
-class _Home extends State<Home> {
-  void onSignInPressed() {}
+class _SignIn extends State<SignIn> {
+  Future<void> onSignInPressed(BuildContext context) async {
+    final repository = AuthRepository(context: context);
+
+    await repository.signInWithGoogle();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,7 @@ class _Home extends State<Home> {
                     ],
                   )),
                   GoogleSignInButton(
-                    onPressed: () => {},
+                    onPressed: () => onSignInPressed(context),
                   )
                 ],
               ))),

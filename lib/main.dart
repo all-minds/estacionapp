@@ -1,4 +1,4 @@
-import 'package:estacionapp/screens/home.dart';
+import 'package:estacionapp/screens/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: const Home(title: 'Estacionapp'),
+      home: const SignIn(title: 'Estacionapp'),
     );
   }
 }
