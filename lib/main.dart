@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       // home: const SignIn(title: 'Estacionapp'),
       routes: {
         Routes.home: (context) => const Home(),
-        Routes.signIn: (context) => const SignIn()
+        Routes.signIn: (context) => const SignIn(),
+        Routes.parkingLotsList: (context) => const ListParkingLots()
       },
     );
   }

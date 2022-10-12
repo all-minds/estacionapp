@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:estacionapp/models/occupation.dart';
-import 'package:estacionapp/repositories/occupations_repository.dart';
+import 'package:estacionapp/models/parking_lot.dart';
 
 class ParkingLotsRepository {
   static Stream<QuerySnapshot<Map<String, dynamic>>> listParkingLots(
@@ -12,20 +11,22 @@ class ParkingLotsRepository {
         .snapshots();
   }
 
-  static int verifyOccupation(
-      String parkingLotId, String parkingId, String userId) {
-    var occupationStatus = 0;
-    List<Occupation> occupations =
-        OccupationsRepository.getOccupations(parkingId);
-    occupations.forEach((element) {
-      if (element.parkingLotId == parkingLotId) {
-        if (element.userId == userId) {
-          occupationStatus = 1;
-        } else {
-          occupationStatus = 2;
-        }
-      }
-    });
-    return occupationStatus;
+  static void updateParkingLot(
+      ParkingLot pl, String parkingId, String userId, bool isOccupation) {
+    ParkingLot updatedPl = ParkingLot(
+        id: pl.id,
+        floor: pl.floor,
+        isAvailable: !isOccupation,
+        number: pl.number,
+        tag: pl.tag,
+        occupantId: isOccupation ? userId : null,
+        occupiedAt: isOccupation ? Timestamp.now() : null);
+
+    FirebaseFirestore.instance
+        .collection("parkings")
+        .doc(parkingId)
+        .collection("parking_lots")
+        .doc(pl.id)
+        .set(updatedPl.toJson());
   }
 }

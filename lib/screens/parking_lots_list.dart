@@ -1,32 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:estacionapp/models/occupation.dart';
+import 'package:estacionapp/constants/spacing.dart';
+import 'package:estacionapp/models/parking.dart';
+import 'package:estacionapp/models/parking_address.dart';
 import 'package:estacionapp/models/parking_lot.dart';
-import 'package:estacionapp/repositories/auth_repository.dart';
-import 'package:estacionapp/repositories/occupations_repository.dart';
 import 'package:estacionapp/repositories/parking_lots_repository.dart';
-import 'package:estacionapp/repositories/parking_repository.dart';
-import 'package:estacionapp/screens/occupy_parking_lot.dart';
+import 'package:estacionapp/services/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-class ListParkingLotsWidget extends StatefulWidget {
-  const ListParkingLotsWidget({super.key});
+class ListParkingLots extends StatefulWidget {
+  const ListParkingLots({super.key});
   final title = const Text("Lista de Vagas");
   @override
-  State<ListParkingLotsWidget> createState() => _ListParkingLotsWidgetState();
+  State<ListParkingLots> createState() => _ListParkingLotsState();
 }
 
-class _ListParkingLotsWidgetState extends State<ListParkingLotsWidget> {
+class _ListParkingLotsState extends State<ListParkingLots> {
   String parkingId = "1ANAmUT3C6YocWtKpMVS";
-  final loggedUser = AuthRepository.loggedUser;
+
+  User? loggedUser;
 
   @override
   Widget build(BuildContext context) {
+    final authRepository = FirebaseAuthService(context: context);
+    loggedUser = authRepository.getUser();
     return Scaffold(
-      appBar: AppBar(
-        title: widget.title,
-      ),
       body: buildList(context),
     );
   }
@@ -57,57 +55,53 @@ class _ListParkingLotsWidgetState extends State<ListParkingLotsWidget> {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5)),
+            decoration:
+                const BoxDecoration(color: Color.fromRGBO(0, 119, 182, .9)),
             child: ListTile(
-              title: Text("Número da vaga: ${pl.number}"),
-              subtitle: Text("Andar: ${pl.floor}"),
-              trailing: buildTrailingButton(context, pl.id, pl.isAvailable),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: Spacing.base),
+              title: Text(
+                "Número da vaga: ${pl.number}",
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text("Andar: ${pl.floor}",
+                  style: const TextStyle(color: Colors.white)),
+              trailing: buildTrailingButton(context, pl),
             )));
   }
 
-  Widget buildTrailingButton(
-      BuildContext context, String parkingLotId, bool isAvailable) {
-    var occupationStatus = ParkingLotsRepository.verifyOccupation(
-        parkingLotId, parkingId, loggedUser!.uid);
-    occupationStatus = isAvailable ? 0 : 1;
-    switch (occupationStatus) {
-      case 0:
-        return ElevatedButton(
-            onPressed: () => {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OccupyParkingLot()))
-                      .then((person) {
-                    setState(() {});
-                  })
-                },
-            child: const Text("Ocupar"));
-      case 1:
-        return TextButton(
-            onPressed: () => {setState(() => {})},
-            child: const Text("Ocupada"));
-      case 2:
-        return OutlinedButton(
-            onPressed: () => {setState(() => {})},
-            child: const Text("Indisponível"));
+  Widget buildTrailingButton(BuildContext context, ParkingLot pl) {
+    final userId = loggedUser!.uid;
+    if (pl.occupantId == null) {
+      return ElevatedButton(
+          onPressed: () => {
+                ParkingLotsRepository.updateParkingLot(
+                    pl, parkingId, userId, true)
+              },
+          style: ElevatedButton.styleFrom(minimumSize: const Size(100.0, 35.0)),
+          child: const Text("Ocupar"));
+    } else if (pl.occupantId == userId) {
+      return OutlinedButton(
+        onPressed: () => {
+          ParkingLotsRepository.updateParkingLot(pl, parkingId, userId, false)
+        },
+        style: OutlinedButton.styleFrom(backgroundColor: Colors.white),
+        child: const Text(
+          "Desocupar",
+          style: TextStyle(
+              color: Color.fromRGBO(0, 119, 182, .9),
+              fontWeight: FontWeight.bold),
+        ),
+      );
+    } else {
+      return TextButton(
+        onPressed: () => {},
+        child: const Text(
+          "Indisponível",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      );
     }
-
-    return TextButton(onPressed: () => {}, child: const Text("Ocupar"));
-  }
-
-  Widget buildParkingLotButtons(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: OccupationsRepository.listOccupations(parkingId),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const LinearProgressIndicator();
-          if (snapshot.data == null) {
-            return Container(child: const Text("Nenhuma vaga encontrada"));
-          } else {
-            return buildListSeparated(context, snapshot.data!.docs);
-          }
-        });
   }
 }
