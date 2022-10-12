@@ -1,4 +1,7 @@
+import 'package:estacionapp/constants/routes.dart';
 import 'package:estacionapp/screens/home.dart';
+import 'package:estacionapp/screens/sign_in.dart';
+import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -8,6 +11,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseMessagingService().initializeMessaging();
   runApp(const MyApp());
 }
 
@@ -22,7 +26,11 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: const Home(title: 'Estacionapp'),
+      // home: const SignIn(title: 'Estacionapp'),
+      routes: {
+        Routes.home: (context) => const Home(),
+        Routes.signIn: (context) => const SignIn()
+      },
     );
   }
 }
