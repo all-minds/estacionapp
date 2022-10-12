@@ -1,5 +1,6 @@
 import 'package:estacionapp/constants/routes.dart';
 import 'package:estacionapp/screens/home.dart';
+import 'package:estacionapp/screens/parking_lots_list.dart';
 import 'package:estacionapp/screens/sign_in.dart';
 import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,8 @@ class MyApp extends StatelessWidget {
       // home: const SignIn(title: 'Estacionapp'),
       routes: {
         Routes.home: (context) => const Home(),
-        Routes.signIn: (context) => const SignIn()
+        Routes.signIn: (context) => const SignIn(),
+        Routes.parkingLotsList: (context) => const ListParkingLots()
       },
     );
   }

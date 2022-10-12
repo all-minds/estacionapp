@@ -105,7 +105,6 @@ class _Home extends State<Home> {
       appBar: DefaultAppBar(onLogoutPressed: authRepository.signOut),
       body: Column(children: <Widget>[
         userInfoContainer,
-        // parkingListFilter,
         Expanded(child: buildParkingList(context))
       ]),
     );
