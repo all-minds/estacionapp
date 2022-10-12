@@ -1,54 +1,51 @@
 import 'package:estacionapp/components/google_sign_in_button.dart';
 import 'package:estacionapp/constants/spacing.dart';
-import 'package:estacionapp/repositories/auth_repository.dart';
+import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({super.key, required this.title});
-
-  final String title;
+  const SignIn({super.key});
 
   @override
   State<StatefulWidget> createState() => _SignIn();
 }
 
 class _SignIn extends State<SignIn> {
-  Future<void> onSignInPressed(BuildContext context) async {
-    final repository = AuthRepository(context: context);
-
-    await repository.signInWithGoogle();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Padding(
-              padding: const EdgeInsets.only(
-                  left: Spacing.base,
-                  right: Spacing.base,
-                  top: Spacing.base,
-                  bottom: Spacing.medium),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(),
-                  Expanded(
-                      child: Column(
-                    mainAxisSize: MainAxisSize.min,
+        body: SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(Spacing.base),
+                child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Flexible(
-                        flex: 1,
-                        child: Image.asset('assets/estacionapp-logo.png'),
+                    children: [
+                      Column(
+                        children: <Widget>[
+                          Flexible(
+                            flex: 0,
+                            child: Image.asset('assets/estacionapp-logo.png'),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              const Padding(
+                                  padding:
+                                      EdgeInsets.only(bottom: Spacing.medium),
+                                  child:
+                                      Text('Seu melhor lugar para estacionar')),
+                              GoogleSignInButton(onPressed: () async {
+                                await FirebaseAuthService(context: context)
+                                    .signInWithGoogle();
+                              }),
+                            ],
+                          )
+                        ],
                       )
-                    ],
-                  )),
-                  GoogleSignInButton(
-                    onPressed: () => onSignInPressed(context),
-                  )
-                ],
-              ))),
-    );
+                    ]))));
   }
 }

@@ -1,6 +1,9 @@
+import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../constants/routes.dart';
 
 const Map<String, String> authenticationErrorMapper = {
   'account-exists-with-different-credential':
@@ -9,18 +12,29 @@ const Map<String, String> authenticationErrorMapper = {
   'sign-in-failed': 'Falha ao logar!'
 };
 
-class AuthRepository {
+class FirebaseAuthService {
   final BuildContext context;
 
   late FirebaseAuth instance;
-  late User? loggedUser;
 
-  AuthRepository({required this.context}) {
+  FirebaseAuthService({required this.context}) {
     instance = FirebaseAuth.instance;
   }
 
   static SnackBar customSnackBar({required String message}) {
     return SnackBar(content: Text(message));
+  }
+
+  User? getUser() {
+    return instance.currentUser;
+  }
+
+  // Encapsulates logout
+  Future<void> signOut() async {
+    await instance.signOut().then((value) async {
+      await Navigator.pushNamed(context, Routes.signIn);
+      await FirebaseMessagingService().unsubscribe();
+    });
   }
 
   // Encapsulates google sign in flow
@@ -37,19 +51,21 @@ class AuthRepository {
       final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      await instance.signInWithCredential(credential);
-      loggedUser = instance.currentUser;
+      await instance.signInWithCredential(credential).then((value) async {
+        await Navigator.pushNamedAndRemoveUntil(context, Routes.home, (_) => false);
+      });
     } on FirebaseAuthException catch (error) {
       final message = authenticationErrorMapper[error.code] ??
           'Não foi possível logar agora!';
 
       ScaffoldMessenger.of(context)
-          .showSnackBar(AuthRepository.customSnackBar(message: message));
+          .showSnackBar(FirebaseAuthService.customSnackBar(message: message));
 
       rethrow;
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(AuthRepository.customSnackBar(
-          message: 'Um erro desconhecido ocorreu, tente novamente!'));
+      ScaffoldMessenger.of(context).showSnackBar(
+          FirebaseAuthService.customSnackBar(
+              message: 'Um erro desconhecido ocorreu, tente novamente!'));
 
       rethrow;
     }
