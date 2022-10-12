@@ -25,9 +25,20 @@ class FirebaseMessagingService {
     }
   }
 
+  Future<void> subscribeToUserTopic() async {
+    await instance.subscribeToTopic('users-${user!.uid}');
+
+    final settings = await instance.requestPermission(
+        alert: true, badge: true, provisional: true, sound: true);
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      _onMessage();
+    }
+  }
+
   Future<void> unsubscribe() async {
     await instance.unsubscribeFromTopic('parking-general');
-    await instance.unsubscribeFromTopic(user!.uid);
+    await instance.unsubscribeFromTopic('users-${user!.uid}');
   }
 
   _setupAndroidDetails() {

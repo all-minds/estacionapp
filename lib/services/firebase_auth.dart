@@ -53,10 +53,11 @@ class FirebaseAuthService {
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
       await instance.signInWithCredential(credential).then((value) async {
-        await Navigator.pushNamedAndRemoveUntil(
-            context, Routes.home, (_) => false);
-        await FirebaseMessaging.instance.subscribeToTopic(value.user!.uid);
-        print('ok');
+        await FirebaseMessagingService().subscribeToUserTopic().then(
+            (value) async => {
+                  await Navigator.pushNamedAndRemoveUntil(
+                      context, Routes.home, (_) => false)
+                });
       });
     } on FirebaseAuthException catch (error) {
       final message = authenticationErrorMapper[error.code] ??
