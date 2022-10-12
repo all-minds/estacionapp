@@ -1,21 +1,137 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:estacionapp/components/default_app_bar.dart';
+import 'package:estacionapp/models/parking.dart';
 import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:estacionapp/constants/spacing.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
-
+  const Home({Key? key}) : super(key: key);
+  
   @override
-  State<Home> createState() => _HomeState();
+  State<Home> createState() => _Home();
 }
 
-class _HomeState extends State<Home> {
+class _Home extends State<Home> {
+  User? loggedUser;
+
   @override
   Widget build(BuildContext context) {
+
     final authRepository = FirebaseAuthService(context: context);
 
+    loggedUser = authRepository.getUser();
+
+    final userInfoContainer = Container(
+      padding: const EdgeInsets.all(Spacing.base),
+      //color: Colors.amber,
+      child: Column(
+        children: [
+          const CircleAvatar(
+            radius: 20.0,
+            backgroundColor: Colors.white,
+            backgroundImage: AssetImage('assets/user_male.png')
+          ),
+          Padding(
+            padding: const EdgeInsets.all(Spacing.base),
+            child: Text("Bem vindo, José")
+          )
+        ],        
+      )
+    );
+
+    final parkingListFilter = Padding(
+      padding: const EdgeInsets.all(Spacing.base),
+      child: Form(              
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  hintText: "Onde você gostaria de estacionar hoje?"
+                )  
+              ),
+            )
+          ]
+        ),
+      )
+    );
+
+    Widget parkingListTile(BuildContext context, QueryDocumentSnapshot snapshot) {
+      Parking parking = Parking.fromSnapshot(snapshot);
+      return ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: Spacing.base),      
+        title: Text(
+          parking.description == null ? "" : parking.description!,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Row(
+          children: <Widget>[          
+            Text("Endereço: ${parking.address.streetName}, ${parking.address.city}", 
+            style: const TextStyle(color: Colors.white))
+          ],
+        ),
+        trailing: SizedBox(
+          width: 30.0,
+          height: 30.0,
+          child: ElevatedButton(
+            child: const Padding(
+              padding: EdgeInsets.zero,
+              child: Icon(Icons.keyboard_arrow_right, color: Colors.white)
+            ),
+            onPressed: () {}, // parte do Luiz. Mas eu preciso alterar alguma coisa de estado? Se pá sim...
+          )
+        )
+      );
+    }
+
+    Widget parkingCard(BuildContext context, QueryDocumentSnapshot snapshot) {
+      return Card(
+        elevation: 8.0,
+        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+        child: Container(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 119, 182, .9)),
+          child: parkingListTile(context, snapshot)
+        ),
+      );
+    }
+
+    Widget buildParkingListItems(BuildContext context, List<QueryDocumentSnapshot> snapshot) {
+      return ListView(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        children: snapshot.map((parking) => parkingCard(context, parking)).toList()
+      );
+    }
+
+    Widget buildParkingList(BuildContext context) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection("parkings").snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const LinearProgressIndicator();
+
+          if (snapshot.data == null) {
+            return const Text("Não foram encontratos estacionamentos");
+          } else {
+            return buildParkingListItems(context, snapshot.data!.docs);
+          }
+        },
+      );
+    }
+
     return Scaffold(
-        appBar: DefaultAppBar(onLogoutPressed: authRepository.signOut),
-        body: Column());
+      appBar: DefaultAppBar(onLogoutPressed: authRepository.signOut), 
+      body: Column(
+          children:             
+            <Widget>[
+              userInfoContainer,
+              parkingListFilter,
+              Expanded(
+                child: buildParkingList(context)
+              )
+            ]
+      ),
+    );    
   }
 }
