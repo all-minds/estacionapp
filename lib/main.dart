@@ -1,5 +1,6 @@
 import 'package:estacionapp/constants/routes.dart';
 import 'package:estacionapp/screens/home.dart';
+import 'package:estacionapp/screens/parking_lots_list.dart';
 import 'package:estacionapp/screens/sign_in.dart';
 import 'package:estacionapp/services/firebase_messaging.dart';
 import 'package:flutter/material.dart';
