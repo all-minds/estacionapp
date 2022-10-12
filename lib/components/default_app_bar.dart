@@ -2,8 +2,8 @@ import 'package:estacionapp/services/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DefaultAppBar({super.key});
-
+  DefaultAppBar({super.key, this.title});
+  String? title;
   @override
   Size get preferredSize => const Size.fromHeight(50);
 
@@ -14,6 +14,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      title: Text(title!),
       actions: [
         IconButton(
             onPressed: () async {

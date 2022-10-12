@@ -25,7 +25,9 @@ class _ListParkingLotsState extends State<ListParkingLots> {
     parking = ModalRoute.of(context)!.settings.arguments as Parking;
 
     return Scaffold(
-      appBar: const DefaultAppBar(),
+      appBar: DefaultAppBar(
+        title: parking!.label,
+      ),
       body: buildList(context),
     );
   }

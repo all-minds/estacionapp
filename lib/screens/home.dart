@@ -109,7 +109,9 @@ class _Home extends State<Home> {
     }
 
     return Scaffold(
-      appBar: const DefaultAppBar(),
+      appBar: DefaultAppBar(
+        title: "Estacionapp",
+      ),
       body: Column(children: <Widget>[
         userInfoContainer,
         Expanded(child: buildParkingList(context))
