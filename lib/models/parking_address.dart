@@ -17,4 +17,25 @@ class ParkingAddress {
       required this.city,
       required this.stateCode,
       this.complement});
+
+  ParkingAddress.fromMap(Map<String, dynamic> map)
+      : streetName = map['street_name'],
+        neighborhood = map['neighborhood'],
+        zipCode = map['zip_code'],
+        country = map['country'],
+        number = map['number'],
+        city = map['city'],
+        stateCode = map['state_code'],
+        complement = map['complement'];
+  
+  Map<String, dynamic> toJson() => {
+    'street_name' : streetName,
+    'neighborhood' : neighborhood,
+    'zip_code' : zipCode,
+    'country' : country,
+    'number' : number,
+    'city' : city,
+    'state_code' : stateCode,
+    'complement' : complement
+  };
 }
